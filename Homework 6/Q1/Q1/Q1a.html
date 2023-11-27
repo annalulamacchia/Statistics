@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grafico a Linee e a Barre</title>
+    <style>
+        .container{
+            display: flex;
+            flex-direction: row;
+            height:100vh;
+           max-width:100%;
+
+        }
+        .container1 {
+            width: 80%;
+            height: 95%; 
+            border: 1px solid #000;
+            overflow: hidden;
+            resize: both;
+        }
+        .container2 {
+            width: 80%; 
+            max-height: 95%; 
+            border: 1px solid #000;
+            overflow: hidden;
+            object-fit: cover;
+            resize: both;
+        }
+        canvas {
+            width: 80%;
+            height:90%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+    <div class="container1" onmousedown="resizeContainerLineChart(event)">
+    <canvas id="lineChart" ></canvas>
+    </div>
+    <div class="container2"  onmousedown="resizeContainerBarChart(event)">
+    <canvas id="barChart"></canvas>
+    </div>
+</div>
+
+<script>
+    var M = 1000;
+    var N = 1000;
+    var SValues = [20, 60, 100];
+    var probabilities = [];
+    var discardedSystems = [];
+    AttackLanded(probabilities, discardedSystems, SValues);
+    const chart1 = document.getElementById("lineChart");
+    const chart2 = document.getElementById("barChart");
+    const container1 = document.querySelector(".container1");
+    const container2 = document.querySelector(".container2");
+
+    function resizeContainerLineChart(event) {
+        const initialX = event.clientX;
+        const initialWidth = parseFloat(getComputedStyle(container1).width);
+        const onMouseMove = (e) => {
+            const newWidth = initialWidth + (e.clientX - initialX);
+            container1.style.width = `${newWidth}px`;
+            const newWidth2 = initialWidth2 + (e.clientX - initialX);
+            container2.style.width = `${newWidth2}px`;
+            resizeCharts();
+        };
+    }
+
+    function resizeContainerBarChart(event) {
+        const initialX = event.clientX;
+        const initialWidth2 = parseFloat(getComputedStyle(container2).width);
+        const onMouseMove = (e) => {
+            const newWidth = initialWidth + (e.clientX - initialX);
+            container1.style.width = `${newWidth}px`;
+            const newWidth2 = initialWidth2 + (e.clientX - initialX);
+            container2.style.width = `${newWidth2}px`;
+            resizeCharts();
+        };
+
+        const onMouseUp = () => {
+            window.removeEventListener("mousemove", onMouseMove);
+            window.removeEventListener("mouseup", onMouseUp);
+        };
+
+        window.addEventListener("mousemove", onMouseMove);
+        window.addEventListener("mouseup", onMouseUp);
+    }
+
+    function resizeCharts() {
+        const containerWidth = parseFloat(getComputedStyle(container1).width);
+        const containerHeight = parseFloat(getComputedStyle(container1).height);
+        const containerWidth2 = parseFloat(getComputedStyle(container2).width);
+        const containerHeight2 = parseFloat(getComputedStyle(container2).height);
+        chart1.width = containerWidth;
+        chart1.height = containerHeight / 2;
+        chart2.width = containerWidth2;
+        chart2.height = (containerHeight2/2);
+        creaCharts();
+    }
+
+    function AttackLanded(probabilities, discardedSystems, SValues) {
+        for (var v = 0 ; v < SValues.length; v++) {
+            var S = SValues[v];
+            probabilities[v] = [];
+            for (var k = 2; k <= 10; k++) {
+                var P = k*10;
+                var discardedCount = 0;
+                for (var i = 0; i < M; i++) {
+                    var penetrationScore = 0;
+                    for (var j = 0; j < N; j++) {
+                        var attackScore = Math.floor(Math.random() * (S+1));
+                        if (attackScore >= S) {
+                            break;
+                        }
+                        penetrationScore+=1;
+                        if (penetrationScore >= P) {
+                            discardedCount++;
+                            break;
+                        }
+                    }
+                }
+            }
+            var probabilityOfDiscard = discardedCount / M;
+            probabilities[v].push(probabilityOfDiscard);
+            discardedSystems.push(discardedCount);
+        }
+    }
+    creaCharts();
+    
+    function creaCharts(){
+        var canvasLine = document.getElementById('lineChart');
+        var ctxLine = canvasLine.getContext('2d');
+        var canvasBar = document.getElementById('barChart');
+        var ctxBar = canvasBar.getContext('2d');
+        var width = canvasLine.width;
+        var height = canvasLine.height;
+        var padding = 40;
+        var numDataPoints = N;
+        
+        ctxLine.beginPath();
+        ctxLine.moveTo(padding, height - padding);
+        ctxLine.lineTo(width - padding, height - padding);
+        ctxLine.stroke();
+
+        var successfulAttacks= [M];
+        var cumulative= [M];
+        for(let i = 0; i<M;i++){
+            successfulAttacks[i]=0;
+            cumulative[i]= 0;
+        }
+        
+        for(let i = 0; i<M; i++){
+            for(let j = 0; j<N; j++){            
+            if(scoreTrajectories[i][j] == -1){
+                    successfulAttacks[i]++;
+                }
+            }
+        }
+        var maxDataValue = Math.max.apply(null, cumulative);
+        var minDataValue = Math.min.apply(null, cumulative);
+        var xScale = (width - 2 * padding) / numDataPoints;
+        var yScale = (height - 2 * padding) / (N - minDataValue);
+            
+        for (var i = 0; i < M; i++) {
+            ctxLine.beginPath();
+            ctxLine.strokeStyle = getRandomColor();
+            ctxLine.lineWidth = 2;
+            for (var j = 0; j < numDataPoints; j++) {
+                var x = padding + j * xScale;
+                cumulative[i]+= scoreTrajectories[i][j];
+                var y = height - padding - (cumulative[i] ) * yScale;
+                if (j === 0) {
+                    ctxLine.moveTo(x, y);
+                } else {
+                     ctxLine.lineTo(x, y);
+                }
+            }
+            ctxLine.stroke();
+        }
+
+        ctxLine.fillStyle = "black";
+        ctxLine.font = "bold 12px Arial";
+        ctxLine.fillText("Number of Attacks", width / 2, height - padding / 16);
+        ctxLine.fillText("Security Score", padding / 2, padding / 2);
+
+        for (var i = 0; i <= numDataPoints; i += 5) {
+            var x = padding + i * xScale;
+            ctxLine.beginPath();
+            ctxLine.moveTo(x, height - padding + 5);
+            ctxLine.lineTo(x, height - padding - 5);
+            ctxLine.stroke();
+            ctxLine.fillText(i, x - 10, height - padding + 20);
+        }
+
+        for (var i = minDataValue; i <= maxDataValue; i += 5) {
+            var y = height - padding - (i - minDataValue) * yScale;
+            ctxLine.beginPath();
+            ctxLine.moveTo(padding - 5, y);
+            ctxLine.lineTo(padding + 5, y);
+            ctxLine.stroke();
+            ctxLine.fillText(i, padding - 30, y + 5);
+        }
+        BarChart(numDataPoints,scoreTrajectories,successfulAttacks,M, N,padding,ctxBar);
+    }
+
+    function BarChart(numDataPoints, scoreTrajectories,successfulAttacks,M, N,padding,ctxBar){
+        width = numDataPoints * 20;
+        height =10 *15;
+        var maxSuccessfulAttacks = Math.max.apply(null, successfulAttacks);
+        var barHeight = 8;
+        var barSpacing = 5;
+
+        for (var i = 0; i < M; i++) {
+            var y =  height - (i+1) *(barHeight + barSpacing);
+            var RectWidth = (successfulAttacks[i] / maxSuccessfulAttacks) * (width - 2 * padding);
+            var barWidth =  (successfulAttacks[i] / maxSuccessfulAttacks) *20;
+
+            ctxBar.fillStyle = "black";
+            ctxBar.font = "bold 12px Arial";
+            ctxBar.fillText(successfulAttacks[i], barWidth , y + barHeight / 2 + 5);
+            ctxBar.fillStyle = getRandomColor();
+            ctxBar.fillRect(padding, y, barWidth, barHeight);
+        }
+
+        ctxBar.beginPath();
+        ctxBar.moveTo(padding, height);
+        ctxBar.lineTo(width - padding,height);
+        ctxBar.moveTo(padding, height);
+        ctxBar.lineTo(padding, padding);
+        ctxBar.stroke();
+
+        for (var j = 0; j <= maxSuccessfulAttacks; j += 5) {
+            var xTacca = padding + j * (width - 2 * padding) / maxSuccessfulAttacks;
+            ctxBar.beginPath();
+            ctxBar.moveTo(xTacca, height - padding + 5);
+            ctxBar.lineTo(xTacca, height - padding - 5);
+            ctxBar.stroke();
+        }
+
+        ctxBar.fillStyle = "black";
+        ctxBar.font = "bold 12px Arial";
+        ctxBar.fillText("Number of Successful Attacks", width/ 2,height);
+        ctxBar.fillText("System", padding / 2, padding / 2);
+    }
+
+    function getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+</script>
+</body>
+</html>

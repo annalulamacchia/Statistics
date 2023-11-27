@@ -1,0 +1,16 @@
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 1\Homework_1\Homework_1\bin\Debug\net6.0-windows\Homework_1.exe
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 1\Homework_1\Homework_1\bin\Debug\net6.0-windows\Homework_1.deps.json
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 1\Homework_1\Homework_1\bin\Debug\net6.0-windows\Homework_1.runtimeconfig.json
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 1\Homework_1\Homework_1\bin\Debug\net6.0-windows\Homework_1.dll
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 1\Homework_1\Homework_1\bin\Debug\net6.0-windows\Homework_1.pdb
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 1\Homework_1\Homework_1\obj\Debug\net6.0-windows\Homework_1.Form1.resources
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 1\Homework_1\Homework_1\obj\Debug\net6.0-windows\Homework_1.csproj.GenerateResource.cache
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 1\Homework_1\Homework_1\obj\Debug\net6.0-windows\Homework_1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 1\Homework_1\Homework_1\obj\Debug\net6.0-windows\Homework_1.AssemblyInfoInputs.cache
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 1\Homework_1\Homework_1\obj\Debug\net6.0-windows\Homework_1.AssemblyInfo.cs
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 1\Homework_1\Homework_1\obj\Debug\net6.0-windows\Homework_1.csproj.CoreCompileInputs.cache
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 1\Homework_1\Homework_1\obj\Debug\net6.0-windows\Homework_1.dll
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 1\Homework_1\Homework_1\obj\Debug\net6.0-windows\refint\Homework_1.dll
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 1\Homework_1\Homework_1\obj\Debug\net6.0-windows\Homework_1.pdb
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 1\Homework_1\Homework_1\obj\Debug\net6.0-windows\Homework_1.genruntimeconfig.cache
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 1\Homework_1\Homework_1\obj\Debug\net6.0-windows\ref\Homework_1.dll

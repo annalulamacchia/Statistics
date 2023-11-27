@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>intervals</title>
+</head>
+<body>
+    <h1> Random Variables</h1>
+    <p> Insert the value of n (number of the random variables) and k (number of intervals)</p>
+    <input type="number" id="n" name="n" placeholder="n">
+    <input type="number" id="k" name="k" placeholder="k">
+    <button onclick="generateRandomVariables()">Generate</button>
+    <div id="output">
+    </div>
+
+    <script>
+        function generateRandomVariables() {
+            const n = parseInt(document.getElementById("n").value);
+            const k = parseInt(document.getElementById("k").value);
+            const freq = new Array(k).fill(0);
+
+            for (let i = 0; i < n; i++) {
+                const v = Math.random();
+                const interval = Math.floor(v*k);
+                freq[interval]++;
+            }
+
+            const output = document.getElementById("output");
+            output.innerHTML = "<h2>Frequency</h2>";
+            for (let i = 0; i < k; i++) {
+                const lower_bound = i/k;
+                const upper_bound = (i+1)/k;
+                output.innerHTML += "Interval [" + lower_bound.toFixed(2)+ "," + upper_bound.toFixed(2) +"]: " + freq[i] +"<br>";
+            }
+        }
+    </script>
+</body>
+</html>

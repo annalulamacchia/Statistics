@@ -1,0 +1,10 @@
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 4\Q2\Q2\obj\Debug\Q2.csproj.AssemblyReference.cache
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 4\Q2\Q2\obj\Debug\Q2.Form1.resources
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 4\Q2\Q2\obj\Debug\Q2.Properties.Resources.resources
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 4\Q2\Q2\obj\Debug\Q2.csproj.GenerateResource.cache
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 4\Q2\Q2\obj\Debug\Q2.csproj.CoreCompileInputs.cache
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 4\Q2\Q2\bin\Debug\Q2.exe.config
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 4\Q2\Q2\bin\Debug\Q2.exe
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 4\Q2\Q2\bin\Debug\Q2.pdb
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 4\Q2\Q2\obj\Debug\Q2.exe
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 4\Q2\Q2\obj\Debug\Q2.pdb

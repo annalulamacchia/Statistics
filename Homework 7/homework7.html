@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stochastic Process Simulator</title>
+    <style>
+        .parameter-group {
+            display: none;
+        };
+
+        .parameter-group {
+            display: show;
+        };
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.1.0/math.js" integrity="sha512-bJoAPYQ2bOZCtRLkShanIf6IMJAs+8oAmdq5Qjra47q/2ggFXhQeDycgJciFdatpPmS833KvRE7wU/gLqdxz8Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <h1>Stochastic Process Simulator</h1>
+
+    <label for="customSDE">Enter SDE Expression:</label>
+    <textarea id="customSDE" rows="4" cols="50" placeholder="Enter your SDE here"></textarea> <hr>
+
+    <label for="processType">Select Stochastic Process:</label>
+    <select id="processType" onchange="showParameters()">
+        <option value="selectProcess">Select Stochastic Process...</option>
+        <option value="arithmeticBrownian">Arithmetic Brownian</option>
+        <option value="geometricBrownian">Geometric Brownian (Black–Scholes)</option>
+        <option value="meanReverting">Ornstein–Uhlenbeck (mean-reverting)</option>
+        <option value="vasicek">Vasicek</option>
+        <option value="hullWhite">Hull–White</option>
+        <option value="cir">Cox–Ingersoll–Ross</option>
+        <option value="blackKarasinski">Black–Karasinski</option>
+        <option value="heston">Heston</option>
+        <option value="chenModel">Chen Model</option>
+        <option value="poisson">Poisson Process</option>
+        <option value="eulerMaruyama">Euler–Maruyama Method</option>
+        <option value="milstein">Milstein Method</option>
+        <option value="rungeKutta">Runge–Kutta Method</option>
+        <option value="heuns">Heun's Method</option>
+    </select> <hr>
+
+    <div id="arithmeticBrownianParameters" class="parameter-group">
+        <label for="initialValueArit">Enter Initial Value:</label>
+        <input type="text" id="initialValueArit" placeholder="Enter Initial Value"></input> <hr>
+        
+        <label for="driftArit">Enter Drift:</label>
+        <input type="text" id="driftArit" placeholder="Enter Drift"></input> <hr>
+
+        <label for="volatilityArit">Enter Volatility:</label>
+        <input type="text" id="volatilityArit" placeholder="Enter Volatility"></input> <hr>
+    </div>
+
+    <div id="geometricBrownianParameters" class="parameter-group">
+        <label for="initialValueGeo">Enter Initial Value:</label>
+        <input type="text" id="initialValueGeo" placeholder="Enter Initial Value"></input> <hr>
+        
+        <label for="driftGeo">Enter Drift:</label>
+        <input type="text" id="driftGeo" placeholder="Enter Drift"></input> <hr>
+
+        <label for="volatilityGeo">Enter Volatility:</label>
+        <input type="text" id="volatilityGeo" placeholder="Enter Volatility"></input> <hr>
+    </div>
+
+    <div id="meanRevertingParameters" class="parameter-group">
+        <label for="meanReversionRateMean">Enter Mean Reversion Rate:</label>
+        <input type="text" id="meanReversionRateMean" placeholder="Enter Mean Reversion Rate"></input> <hr>
+
+        <label for="longTermMeanMean">Enter Long Term Mean:</label>
+        <input type="text" id="longTermMeanMean" placeholder="Enter Long Term Mean"></input> <hr>
+        
+        <label for="volatilityMean">Enter Volatility:</label>
+        <input type="text" id="volatilityMean" placeholder="Enter Volatility"></input> <hr>
+    </div>
+
+    <div id="vasicekParameters" class="parameter-group">
+        <label for="meanReversionRateVas">Enter Mean Reversion Rate:</label>
+        <input type="text" id="meanReversionRateVas" placeholder="Enter Mean Reversion Rate"></input> <hr>
+
+        <label for="longTermMeanVas">Enter Long Term Mean:</label>
+        <input type="text" id="longTermMeanVas" placeholder="Enter Long Term Mean"></input> <hr>
+        
+        <label for="volatilityVas">Enter Volatility:</label>
+        <input type="text" id="volatilityVas" placeholder="Enter Volatility"></input> <hr>
+    </div>
+
+    <div id="cirParameters" class="parameter-group">
+        <label for="meanReversionRateCir">Enter Mean Reversion Rate:</label>
+        <input type="text" id="meanReversionRateCir" placeholder="Enter Mean Reversion Rate"></input> <hr>
+
+        <label for="longTermMeanCir">Enter Long Term Mean:</label>
+        <input type="text" id="longTermMeanCir" placeholder="Enter Long Term Mean"></input> <hr>
+        
+        <label for="volatilityCir">Enter Volatility:</label>
+        <input type="text" id="volatilityCir" placeholder="Enter Volatility"></input> <hr>
+    </div>
+
+    <div id="hullWhiteParameters" class="parameter-group">
+        <label for="meanReversionRateHull">Enter Mean Reversion Rate:</label>
+        <input type="text" id="meanReversionRateHull" placeholder="Enter Mean Reversion Rate"></input> <hr>
+
+        <label for="longTermMeanHull">Enter Long Term Mean:</label>
+        <input type="text" id="longTermMeanHull" placeholder="Enter Long Term Mean"></input> <hr>
+
+        <label for="volatilityHull">Enter Volatility:</label>
+        <input type="text" id="volatilityHull" placeholder="Enter Volatility"></input> <hr>
+    
+        <label for="meanVolatilityHull">Enter Mean Volatility:</label>
+        <input type="text" id="meanVolatilityHull" placeholder="Enter Mean Volatility"></input> <hr>
+    </div>
+
+    <div id="blackKarasinskiParameters" class="parameter-group">
+        <label for="meanReversionRateBlack">Enter Mean Reversion Rate:</label>
+        <input type="text" id="meanReversionRateBlack" placeholder="Enter Mean Reversion Rate"></input> <hr>
+
+        <label for="longTermMeanBlack">Enter Long Term Mean:</label>
+        <input type="text" id="longTermMeanBlack" placeholder="Enter Long Term Mean"></input> <hr>
+
+        <label for="volatilityBlack">Enter Volatility:</label>
+        <input type="text" id="volatilityBlack" placeholder="Enter Volatility"></input> <hr>
+    
+        <label for="etaBlack">Enter Eta Parameter:</label>
+        <input type="text" id="etaBlack" placeholder="Enter Eta Parameter"></input> <hr>
+
+        <label for="lambdaBlack">Enter Lambda Parameter:</label>
+        <input type="text" id="lambdaBlack" placeholder="Enter Lambda Parameter"></input> <hr>
+    </div>
+
+    <div id="hestonParameters" class="parameter-group">
+        <label for="initialValueHeston">Enter Initial Value:</label>
+        <input type="text" id="initialValueHeston" placeholder="Enter Initial Value"></input> <hr>
+        
+        <label for="meanReversionRateHeston">Enter Mean Reversion Rate:</label>
+        <input type="text" id="meanReversionRateHeston" placeholder="Enter Mean Reversion Rate"></input> <hr>
+
+        <label for="longTermVolatilityHeston">Enter Long Term Volatility:</label>
+        <input type="text" id="longTermVolatilityHeston" placeholder="Enter Long Term Volatility"></input> <hr>
+
+        <label for="volatilityOfVolatilityHeston">Enter Volatility of Volatility:</label>
+        <input type="text" id="volatilityOfVolatilityHeston" placeholder="Enter Volatility of Volatility"></input> <hr>
+
+        <label for="correlationHeston">Enter Correlation:</label>
+        <input type="text" id="correlationHeston" placeholder="Enter Correlation"></input> <hr>
+    </div>
+
+    <div id="chenModelParameters" class="parameter-group">
+        <label for="initialValueChen">Enter Initial Value:</label>
+        <input type="text" id="initialValueChen" placeholder="Enter Initial Value"></input> <hr>
+        
+        <label for="meanReversionRateChen">Enter Mean Reversion Rate:</label>
+        <input type="text" id="meanReversionRateChen" placeholder="Enter Mean Reversion Rate"></input> <hr>
+
+        <label for="longTermVolatilityChen">Enter Long Term Volatility:</label>
+        <input type="text" id="longTermVolatilityChen" placeholder="Enter Long Term Volatility"></input> <hr>
+
+        <label for="volatilityOfVolatilityChen">Enter Volatility of Volatility:</label>
+        <input type="text" id="volatilityOfVolatilityChen" placeholder="Enter Volatility of Volatility"></input> <hr>
+
+        <label for="jumpIntensityChen">Enter Jump Intensity:</label>
+        <input type="text" id="jumpIntensityChen" placeholder="Enter Jump Intensity"></input> <hr>
+
+        <label for="jumpVolatilityChen">Enter Jump Volatility:</label>
+        <input type="text" id="jumpVolatilityChen" placeholder="Enter Jump Volatility"></input> <hr>
+    </div>
+
+    <div id="poissonParameters" class="parameter-group">
+        <label for="numIntervalsPoisson">Enter Number of Intervals:</label>
+        <input type="number" id="numIntervalsPoisson" placeholder="Enter Number of Intervals"></input> <hr>
+        
+        <label for="lambdaPoisson">Enter Lambda Parameter:</label>
+        <input type="text" id="lambdaPoisson" placeholder="Enter Lambda Parameter"></input> <hr>
+    </div>
+
+    <div id="eulerMaruyamaParameters" class="parameter-group">
+        <label for="initialValueEu">Enter Initial Value:</label>
+        <input type="text" id="initialValueEu" placeholder="Enter Initial Value"></input> <hr>
+    </div>
+
+    <div id="milsteinParameters" class="parameter-group">
+        <label for="initialValueMil">Enter Initial Value:</label>
+        <input type="text" id="initialValueMil" placeholder="Enter Initial Value"></input> <hr>
+    </div>
+
+    <div id="rungeKuttaParameters" class="parameter-group">
+        <label for="initialValueRK">Enter Initial Value:</label>
+        <input type="text" id="initialValueRK" placeholder="Enter Initial Value"></input> <hr>
+    </div>
+
+    <div id="heunsParameters" class="parameter-group">
+        <label for="initialValueHeuns">Enter Initial Value:</label>
+        <input type="text" id="initialValueHeuns" placeholder="Enter Initial Value"></input> <hr>
+    </div>
+
+    <div id="parameters">
+        <label for="numSteps">Number of Steps:</label>
+        <input type="number" id="numSteps" value="10"></input> <hr>
+
+        <label for="timeDelta">Time Delta:</label>
+        <input type="number" id="timeDelta" value="1"></input> <hr>
+    </div>
+
+    <button onclick="runSimulation()">Run Simulation</button> <hr>
+    <button onclick="clearSimulation()">Clear Simulation</button>
+    <div id="simulationResults"></div>
+    <canvas id="simulationChart" width="800" height="600"></canvas>
+    <script src="script.js"></script>
+    <script>
+        function showParameters() {
+            // Hide all parameter groups
+            const parameterGroups = document.getElementsByClassName("parameter-group");
+            for (const group of parameterGroups) {
+                group.style.display = "none";
+            }
+
+            const initialGroup = document.getElementsByClassName("initial-group");
+            for (const group of initialGroup) {
+                group.style.display = "none";
+            }
+
+            // Show the selected parameter group
+            const params = document.getElementById("parameters");
+            const selectedProcess = document.getElementById("processType").value;
+            const selectedParameterGroup = document.getElementById(`${selectedProcess}Parameters`);
+            if (selectedParameterGroup) {
+                selectedParameterGroup.style.display = "block";
+            }
+            if(selectedProcess == "poisson") {
+                params.style.display = "none";
+            }
+            else {
+                params.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>

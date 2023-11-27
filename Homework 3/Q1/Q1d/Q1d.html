@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attack Animation</title>
+</head>
+<body>
+    <canvas id="attackCanvas" width="1000" height="400"></canvas>
+    
+    <script>
+        var canvas = document.getElementById('attackCanvas');
+        var ctx = canvas.getContext('2d');
+        var M = Math.floor(Math.random() * 10) + 1;
+        var N = Math.floor(Math.random() * 10) + 1;
+        var dailyProbabilities = new Array(M);
+        var prob = new Array(M);
+        var attacks = new Array(M);
+
+        for (var i = 0; i < M; i++) {
+            dailyProbabilities[i] = new Array(N);
+            prob[i] = new Array(N);
+            attacks[i] = new Array(N);
+            
+            for (var j = 0; j < N; j++) {
+                var dailyAttacks = 0;
+                var p = Math.random();
+                var p2 = Math.random();
+                
+                if (p < p2) {
+                    dailyAttacks = 1;
+                }
+                
+                attacks[i][j] = dailyAttacks;
+                prob[i][j] = p2;
+                dailyProbabilities[i][j] = p;
+            }
+        }
+        
+        var frame = 0;
+        var timerInterval = 2000; 
+        var timer = setInterval(animate, timerInterval);
+
+        function animate() {
+            frame++;
+            if (frame >= 2 * N) {
+                frame = 0;
+            }
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (var j = 0; j < frame / 2; j++) {
+                for (var i = 0; i < M; i++) {
+                    var text = `System ${i + 1}, Day ${j + 1}: ${attacks[i][j]} attacks, p: ${dailyProbabilities[i][j].toFixed(2)}, p_attack: ${prob[i][j].toFixed(2)}`;
+                    ctx.font = '12px Arial';
+                    ctx.fillStyle = 'black';
+                    ctx.fillText(text, 20 + i * 275, 30 * j + 15);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

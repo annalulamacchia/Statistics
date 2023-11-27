@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grafico a Barre Orizzontali per Frequenze</title>
+</head>
+<body>
+    <div id="charts-container">
+        <canvas id="cumulativeBarChart"></canvas>
+        <canvas id="relativeBarChart"></canvas>
+        <canvas id="normalizedBarChart"></canvas>
+    </div>
+
+    <script>
+        var chartsContainer = document.getElementById('charts-container');
+
+        function drawHorizontalBarChart(canvas, ctx, data, color, labels) {
+            var numBars = data.length;
+            var barSpacing = 0;
+            var barHeight = 30;
+            var padding = 40;
+            
+            var maxPositive = Math.max(0, ...data);
+            var maxNegative = Math.max(0, ...data.map(value => -value));
+            var maxFrequency = Math.max(maxPositive, maxNegative);
+            
+            var width = Math.max(400, maxFrequency + 2 * padding);
+            var height = numBars * barHeight + 2 * padding;
+            
+            canvas.width = width;
+            canvas.height = height;
+            ctx.beginPath();
+            ctx.moveTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(padding, height - padding);
+            ctx.lineTo(padding, padding);
+            ctx.stroke();
+
+            var xScale = (width - 2 * padding) / maxFrequency;
+
+            for (var i = 0; i < numBars; i++) {
+                var barWidth = data[i] * xScale;
+                var y = height - (i + 1) * barHeight - padding;
+
+                ctx.fillStyle = "black";
+                ctx.fillText(labels[i], padding - 30, y + barHeight / 2 + 5);
+
+                ctx.fillStyle = (data[i] >= 0) ? color : "red";
+                ctx.fillRect(padding, y, barWidth, 10);
+
+                ctx.fillStyle = "black";
+                ctx.fillText(data[i], barWidth + padding + 10, y + barHeight / 2 + 5);
+            }
+        }
+
+        var M = Math.floor(Math.random() * 10) + 1;
+        var N = Math.floor(Math.random() * 100) + 1;
+        var p = Math.random();
+
+        var cumulativeFrequencies = [];
+        var relativeFrequencies = [];
+        var normalizedRatios = [];
+        var labels = [];
+
+        for (var j = 0; j < N; j++) {
+            var cumulativePenetrations = 0;
+            var cumulativeRelativeFrequencies = 0;
+            var cumulativeNormalizedRatios = 0;
+
+            for (var i = 0; i < M; i++) {
+                if (Math.random() < p) {
+                    cumulativePenetrations -= 1;
+                } else {
+                    cumulativePenetrations += 1;
+                }
+
+                cumulativeRelativeFrequencies += cumulativePenetrations / (j + 1);
+                cumulativeNormalizedRatios += cumulativePenetrations / Math.sqrt(j + 1);
+            }
+
+            cumulativeFrequencies.push(cumulativePenetrations);
+            relativeFrequencies.push(cumulativeRelativeFrequencies / M);
+            normalizedRatios.push(cumulativeNormalizedRatios / M);
+            labels.push("Attack " + (j + 1));
+        }
+        
+        var cumulativeCanvas = document.getElementById('cumulativeBarChart');
+        var ctxCumulative = cumulativeCanvas.getContext('2d');
+        drawHorizontalBarChart(cumulativeCanvas, ctxCumulative, cumulativeFrequencies, "#3498db", labels);
+
+        var relativeCanvas = document.getElementById('relativeBarChart');
+        var ctxRelative = relativeCanvas.getContext('2d');
+        drawHorizontalBarChart(relativeCanvas, ctxRelative, relativeFrequencies, "#27ae60", labels);
+
+        var normalizedCanvas = document.getElementById('normalizedBarChart');
+        var ctxNormalized = normalizedCanvas.getContext('2d');
+        drawHorizontalBarChart(normalizedCanvas, ctxNormalized, normalizedRatios, "#e74c3c", labels);
+    </script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>  
+    <head>
+        <title>Task1</title>
+    </head>
+    <body>
+        <input type="file" id="button_file"></input>
+        <div id="work"></div>
+        <hr>
+        <div id="hard_work"></div>
+        <hr>
+        <div id="weight"></div>
+        <hr>
+        <div id="joint"></div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('button_file').addEventListener('change', function(e) {
+                const tsv_path = e.target.files[0];
+                if (!tsv_path) return;
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    var parsed_s = parser(text);
+                    document.getElementById('work').innerHTML += "Discrete Frequence Distribution: Expected work sectors" + "<br>" 
+                    var qual_freq = discrete_freq(parsed_s, "Expected work sectors");
+                    let keys =  Object.keys(qual_freq);
+                    var t = total(qual_freq)
+                    for (let i = 0; i < keys.length; i++) {
+                        let rel_freq = qual_freq[keys[i]]/t;
+                        document.getElementById('work').innerHTML += "<br>" + keys[i] + ":  " + qual_freq[keys[i]] + " || " + rel_freq.toFixed(4) + " || " + (rel_freq*100).toFixed(2) + "%";
+                    }
+
+                    document.getElementById('hard_work').innerHTML += "Discrete Frequence Distribution: Hard Worker (0-5)" + "<br>"
+                    var discrete_qual_freq = discrete_freq(parsed_s, "Hard Worker (0-5)");
+                    keys =  Object.keys(discrete_qual_freq);
+                    t = total(discrete_qual_freq)
+                    for (let i = 0; i < keys.length; i++) {
+                        let rel_freq = discrete_qual_freq[keys[i]]/t;
+                        document.getElementById('hard_work').innerHTML += "<br>" + keys[i] +":  " + discrete_qual_freq[keys[i]] + " || " + rel_freq.toFixed(4) + " || " + (rel_freq*100).toFixed(2) + "%";
+                    }
+
+                    document.getElementById('weight').innerHTML += "Continuous Frequence Distribution: weight" + "<br>" 
+                    var continuous_quant_freq = continuous_freq(parsed_s, "weight", 5);
+                    keys =  Object.keys(continuous_quant_freq);
+                    t = total(continuous_quant_freq)
+                    for (let i = 0; i < keys.length; i++) {
+                        let rel_freq = continuous_quant_freq[keys[i]]/t;
+                        document.getElementById('weight').innerHTML += "<br>" + keys[i] +":  " + continuous_quant_freq[keys[i]] + " || " + rel_freq.toFixed(4) + " || " + (rel_freq*100).toFixed(2) + "%";
+                    }
+
+                    document.getElementById('joint').innerHTML += "Joint Distribution: (Expected work sectors, Hard Worker (0-5))" + "<br>" 
+                    var v = ["Expected work sectors", "Hard Worker (0-5)"];
+                    var internal_subdivisions = [];
+                    for (let i = 0; i < v.length; i++) {
+                        internal_subdivisions[i] = Math.random() * 10;
+                    }
+                    var j_freq = joint_freq_cont(parsed_s, 2, v);
+                    keys =  Object.keys(j_freq);
+                    t = total(j_freq)
+                    for (let i = 0; i < keys.length; i++) {
+                        let rel_freq = j_freq[keys[i]]/t;
+                        document.getElementById('joint').innerHTML += "<br>" + "(" + keys[i] + ") " +":  " + j_freq[keys[i]] + " || " + rel_freq.toFixed(4) + " || " + (rel_freq*100).toFixed(2) + "%";
+                    }
+                };
+                reader.readAsArrayBuffer(tsv_path);
+            });
+        });
+
+        function total(dictionary) {
+            let total = 0;
+            var values =  Object.values(dictionary)
+            for(let i = 0; i < values.length; i++) {
+                total += values[i];
+            }
+            return total;
+        }
+
+        function parser(text){
+            const data = new Uint8Array(text);
+            let output = '';
+            for (let i = 0; i < data.length; i++) {
+                output += String.fromCharCode(data[i]);
+            }
+            var rows = output.split("\n");
+            var m = [];
+            for (let i = 0; i < rows.length; i++) {
+                m[i] = [];
+                for(let j = 0; j < rows[0].split("\t").length; j++){
+                    m[i][j] = (rows[i].split("\t"))[j];
+                }
+            }
+            return m;
+        }
+
+        function discrete_freq(parsed_s, v) {
+            var index  = 0;
+            var dictionary = {};
+            var cols = parsed_s[0].length;
+            var rows = parsed_s.length;
+            for (let i = 0; i < cols; i++) {
+                if (parsed_s[0][i]===v) {
+                    index = i; 
+                    break;
+                }
+            }
+            for (let j = 1; j < rows; j++) {
+                var elem =  parsed_s[j][index];
+                let keys =  Object.keys(dictionary);
+                if (elem != null) {
+                    if(keys.includes(elem)) {
+                        dictionary[elem]++;
+                    } else {
+                        dictionary[elem] = 1;
+                    }
+                }
+            }
+            return dictionary;
+        }
+
+        function continuous_freq(parsed_s, v, interval){
+            var index  = 0;
+            var dictionary = {};
+            var cols = parsed_s[0].length;
+            var rows = parsed_s.length;
+            for (let i = 0; i < cols; i++) {
+                if (parsed_s[0][i]===v) {
+                    index = i; 
+                    break;
+                }
+            }
+            for (let j = 1; j < rows; j++) {
+                var elem =  parsed_s[j][index];
+                let keys =  Object.keys(dictionary);
+                if (elem != 0) {
+                    let interval_min = Math.floor(elem / interval);
+                    interval_min = interval_min * interval;
+                    interval_max = interval_min + interval;
+                    var variable = "[" + interval_min + "-" + interval_max + ")";
+                    if(keys.includes(variable)) {
+                        dictionary[variable]++;
+                    } else {
+                        dictionary[variable] = 1;
+                    }
+                }
+            }
+            return dictionary;
+        }
+
+        function joint_freq_cont(parsed_s, n, variables, intervals_subdivisions){
+            var index  = [];
+            const dictionary = {};
+            var cols = parsed_s[0].length;
+            var rows = parsed_s.length;
+            let conta = 0;
+            let intervals_size = [];
+
+            for (let i = 0; i < cols; i++) {
+                if (variables.includes(parsed_s[0][i])) {
+                    index[conta] = i; 
+                    let min = 10000;
+                    let max = 0;
+                    for (let j = 0; j < rows; j++){
+                        let v = parsed_s[j][index[conta]];
+                        if(v!=""){
+                            let v = parseFloat(parsed_s[j][index[conta]]);
+                            if(min>v){
+                                min = v;
+                            }
+                            if(max<v){
+                                max = v;
+                            }
+                        }
+                     }
+                    intervals_size[conta] = (max - min) / intervals_subdivisions[conta];
+                    conta++;
+                }
+            }
+            
+            for (let j = 1; j < rows; j++) {
+                var elem = [];
+                for (let k = 0; k < n; k++) {
+                    let v= parsed_s[j][index[k]];
+                    if(v == "") {
+                        elem[k] = variables[k] + " not specified";
+                    }
+                    else {
+                        let  v_double= parseFloat(parsed_s[j][index[k]]);   
+                        let interval_min = Math.floor(v_double / intervals_size[k]);
+                        interval_min= interval_min * intervals_size[k];
+                        interval_max = interval_min + intervals_size[k];
+                        var Interval = "[" + interval_min + "-" + interval_max + ")";
+                        elem[k] = Interval;
+                    }
+                }
+
+                let key="";
+                for (let k = 0; k < n; k++) {
+                    if(elem[k] != null){
+                        if(k == num-1) {
+                            key+= elem[k];
+                        }
+                        else {
+                            key+= elem[k] + " - ";
+                        }
+                    }
+                    else{
+                        key=null;
+                        break;
+                    }
+                }
+                let keys =  Object.keys(dictionary);
+                if (keys != null) {
+                    if(keys.includes(key)) {
+                        dictionary[key]++;
+                    }
+                    else {
+                        dictionary[key] = 1;
+                    }
+                } 
+            }
+            return dictionary;
+        }
+        </script>
+    </body>
+</html>

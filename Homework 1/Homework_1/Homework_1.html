@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shapes Drawing</title>
+</head>
+<body>
+    <canvas id="Shapes" width="400" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById("Shapes");
+        const ctx = canvas.getContext("2d");
+
+        // Create a line
+        ctx.beginPath();
+        ctx.moveTo(50, 50);
+        ctx.lineTo(200, 50);
+        ctx.strokeStyle = "blue";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Create a point
+        ctx.beginPath();
+        ctx.arc(100, 100, 2, 0, Math.PI * 2);
+        ctx.fillStyle = "red";
+        ctx.fill();
+
+        // Create a circle
+        ctx.beginPath();
+        ctx.arc(300, 200, 50, 0, Math.PI * 2);
+        ctx.strokeStyle = "purple";
+        ctx.stroke();
+
+        // Create a rectangle
+        ctx.strokeStyle = "green";
+        ctx.strokeRect(50, 150, 150, 100);
+    </script>
+</body>
+</html>

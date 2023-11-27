@@ -1,0 +1,10 @@
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 3\Q1\Q1d\Q1d\obj\Debug\Q1d.csproj.AssemblyReference.cache
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 3\Q1\Q1d\Q1d\obj\Debug\Q1d.Properties.Resources.resources
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 3\Q1\Q1d\Q1d\obj\Debug\Q1d.csproj.GenerateResource.cache
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 3\Q1\Q1d\Q1d\obj\Debug\Q1d.csproj.CoreCompileInputs.cache
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 3\Q1\Q1d\Q1d\bin\Debug\Q1d.exe.config
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 3\Q1\Q1d\Q1d\bin\Debug\Q1d.exe
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 3\Q1\Q1d\Q1d\bin\Debug\Q1d.pdb
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 3\Q1\Q1d\Q1d\obj\Debug\Q1d.Form1.resources
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 3\Q1\Q1d\Q1d\obj\Debug\Q1d.exe
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 3\Q1\Q1d\Q1d\obj\Debug\Q1d.pdb

@@ -1,0 +1,16 @@
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 2\Q1\Q1\Q1\obj\Debug\net6.0-windows\Q1.Form1.resources
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 2\Q1\Q1\Q1\obj\Debug\net6.0-windows\Q1.csproj.GenerateResource.cache
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 2\Q1\Q1\Q1\obj\Debug\net6.0-windows\Q1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 2\Q1\Q1\Q1\obj\Debug\net6.0-windows\Q1.AssemblyInfoInputs.cache
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 2\Q1\Q1\Q1\obj\Debug\net6.0-windows\Q1.AssemblyInfo.cs
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 2\Q1\Q1\Q1\obj\Debug\net6.0-windows\Q1.csproj.CoreCompileInputs.cache
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 2\Q1\Q1\Q1\bin\Debug\net6.0-windows\Q1.exe
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 2\Q1\Q1\Q1\bin\Debug\net6.0-windows\Q1.deps.json
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 2\Q1\Q1\Q1\bin\Debug\net6.0-windows\Q1.runtimeconfig.json
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 2\Q1\Q1\Q1\bin\Debug\net6.0-windows\Q1.dll
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 2\Q1\Q1\Q1\bin\Debug\net6.0-windows\Q1.pdb
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 2\Q1\Q1\Q1\obj\Debug\net6.0-windows\Q1.dll
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 2\Q1\Q1\Q1\obj\Debug\net6.0-windows\refint\Q1.dll
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 2\Q1\Q1\Q1\obj\Debug\net6.0-windows\Q1.pdb
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 2\Q1\Q1\Q1\obj\Debug\net6.0-windows\Q1.genruntimeconfig.cache
+C:\Users\ann.lamacchia\Desktop\Statistics\Homework 2\Q1\Q1\Q1\obj\Debug\net6.0-windows\ref\Q1.dll
