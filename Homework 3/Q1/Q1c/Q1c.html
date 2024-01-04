@@ -4,31 +4,55 @@
     <title>Attack Animation</title>
 </head>
 <body>
+    <div>
+        <label for="numSystemsInput">Number of Systems (M): </label>
+        <input type="number" id="numSystemsInput" min="1" value="100">
+      </div>
+      <div>
+        <label for="numAttacksInput">Number of Attacks (N): </label>
+        <input type="number" id="numAttacksInput" min="1" value="50">
+      </div>
+      <div>
+        <label for="successProbabilityInput">Success Probability of Attacks: </label>
+        <input type="number" id="successProbabilityInput" min="0" max="1" step="0.01" value="0.5">
+    </div>
+    <button id="startSimulationButton">Start Simulation</button>
+    <hr>
     <canvas id="attackCanvas" width="800" height="400"></canvas>
 
     <script>
         var canvas = document.getElementById('attackCanvas');
         var ctx = canvas.getContext('2d');
+        const numSystemsInput = document.getElementById("numSystemsInput");
+        const numAttacksInput = document.getElementById("numAttacksInput");
+        const successProbabilityInput = document.getElementById("successProbabilityInput");
+        const startSimulationButton = document.getElementById("startSimulationButton");
 
-        var M = Math.floor(Math.random() * 10) + 1;  
-        var N = Math.floor(Math.random() * 10) + 1;
-        var p = Math.random();  
+        var M = parseInt(document.getElementById("numSystemsInput").value);
+        var N = parseInt(document.getElementById("numAttacksInput").value);
+        var p = parseFloat(document.getElementById("successProbabilityInput").value);
         var attacks = [];
 
         var frame = 0;
         var timer;
 
-        for (var i = 0; i < M; i++) {
-            attacks[i] = [];
-            for (var j = 0; j < N; j++) {
-                if (Math.random() < p) {
-                    attacks[i][j] = 1;
-                } else {
-                    attacks[i][j] = 0;
+        function startSimulation() {
+            for (var i = 0; i < M; i++) {
+                attacks[i] = [];
+                for (var j = 0; j < N; j++) {
+                    if (Math.random() < p) {
+                        attacks[i][j] = 1;
+                    } else {
+                        attacks[i][j] = 0;
+                    }
                 }
             }
+            timer = setInterval(animate, 2000); 
+            
         }
 
+        startSimulationButton.addEventListener("click", startSimulation);
+        
         function animate() {
             frame++;
             if (frame >= 2 * N)
@@ -64,10 +88,7 @@
                 }
             }
         }
-
-        timer = setInterval(animate, 2000); 
-        canvas.width = 800;
-        canvas.height = 400;
+        
     </script>
 </body>
 </html>
