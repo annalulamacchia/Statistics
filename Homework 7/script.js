@@ -35,10 +35,10 @@ function runSimulation() {
 
 function simulateSDE(sdeExpression, numSteps, timeDelta) {
     const trajectories = [];
-    let x = 0; // Initial value, you can customize this
+    let x = 0; 
 
     for (let i = 0; i < numSteps; i++) {
-        const dW = generateRandomNormal(); // Generate random value based on normal distribution
+        const dW = generateRandomNormal(); 
         x = evaluateSDE(sdeExpression, x, i * timeDelta, timeDelta, dW);
         trajectories.push(x);
     }
@@ -145,18 +145,13 @@ function computeArithmeticBrownian(initialValue, drift, volatility, numSteps, ti
     let value = initialValue;
 
     for (let i = 0; i < numSteps; i++) {
-        // Generate a random value based on normal distribution (standard normal)
         const randomValue = generateRandomNormal();
-
-        // Update the value using the Arithmetic Brownian Motion formula
         const driftTerm = drift * timeDelta;
         const volatilityTerm = volatility * randomValue * Math.sqrt(timeDelta);
 
         value += driftTerm + volatilityTerm;
-
         trajectories.push(value);
     }
-
     return trajectories;
 }
 
@@ -165,176 +160,140 @@ function computeGeometricBrownian(initialValue, drift, volatility, numSteps, tim
     let value = initialValue;
 
     for (let i = 0; i < numSteps; i++) {
-        // Generate a random value based on normal distribution (standard normal)
         const randomValue = generateRandomNormal();
-
-        // Update the stock price using the Geometric Brownian Motion formula (Black-Scholes)
         const driftTerm = (drift - 0.5 * volatility ** 2) * timeDelta;
         const volatilityTerm = volatility * randomValue * Math.sqrt(timeDelta);
 
         value *= Math.exp(driftTerm + volatilityTerm);
-
         trajectories.push(value);
     }
-
     return trajectories;
 }
 
 function computeOrnsteinUhlenbeck(meanReversionRate, longTermMean, volatility, numSteps, timeDelta) {
     const trajectories = [];
-    let level = 0; // Initial level (you can customize this)
+    let level = 0;
 
     for (let i = 0; i < numSteps; i++) {
-        // Generate a random value based on normal distribution (standard normal)
         const randomValue = generateRandomNormal();
 
-        // Update the level using the Ornstein–Uhlenbeck formula
         const meanDiff = meanReversionRate * (longTermMean - level) * timeDelta;
         const volatilityDiff = volatility * randomValue * Math.sqrt(timeDelta);
-
         level += meanDiff + volatilityDiff;
-
         trajectories.push(level);
     }
-
     return trajectories;
 }
 
 function computeVasicek(meanReversionRate, longTermMean, volatility, numSteps, timeDelta) {
     const trajectories = [];
-    let level = longTermMean; // Start at the long-term mean (you can customize this)
+    let level = longTermMean;
 
     for (let i = 0; i < numSteps; i++) {
-        // Generate a random value based on normal distribution (standard normal)
         const randomValue = generateRandomNormal();
 
-        // Update the level using the Vasicek formula
         const meanDiff = meanReversionRate * (longTermMean - level) * timeDelta;
         const volatilityDiff = volatility * randomValue * Math.sqrt(timeDelta);
-
         level += meanDiff + volatilityDiff;
-
         trajectories.push(level);
     }
-
     return trajectories;
 }
 
 function computeHullWhite(meanReversionRate, longTermMean, meanVolatility, numSteps, timeDelta) {
     const trajectories = [];
-    let level = longTermMean; // Start at the long-term mean (you can customize this)
-    let volatilityLevel = meanVolatility; // Start at the mean volatility (you can customize this)
+    let level = longTermMean;
+    let volatilityLevel = meanVolatility;
 
     for (let i = 0; i < numSteps; i++) {
-        // Generate random values based on normal distribution (standard normal)
         const randomValue1 = generateRandomNormal();
         const randomValue2 = generateRandomNormal();
 
-        // Update the level using the Hull–White formula
         const meanDiff = meanReversionRate * (longTermMean - level) * timeDelta;
         const volatilityDiff = volatilityLevel * randomValue1 * Math.sqrt(timeDelta);
         const meanVolatilityDiff = meanVolatility * Math.sqrt(timeDelta) * randomValue2;
 
         level += meanDiff + volatilityDiff;
         volatilityLevel += meanVolatilityDiff;
-
         trajectories.push(level);
     }
-
     return trajectories;
 }
 
 function computeCIR(meanReversionRate, longTermMean, volatility, numSteps, timeDelta) {
     const trajectories = [];
-    let level = longTermMean; // Start at the long-term mean (you can customize this)
+    let level = longTermMean;
 
     for (let i = 0; i < numSteps; i++) {
-        // Generate random values based on normal distribution (standard normal)
         const randomValue1 = generateRandomNormal();
         const randomValue2 = generateRandomNormal();
 
-        // Update the level using the Cox–Ingersoll–Ross formula
         const meanDiff = meanReversionRate * (longTermMean - level) * timeDelta;
         const volatilityDiff = volatility * Math.sqrt(level) * randomValue1 * Math.sqrt(timeDelta);
         const meanVolatilityDiff = 0.25 * volatility ** 2 * timeDelta - (volatility ** 2 / 2) * timeDelta + volatility * Math.sqrt(level) * randomValue2 * Math.sqrt(timeDelta);
 
         level += meanDiff + volatilityDiff + meanVolatilityDiff;
-
         trajectories.push(level);
     }
-
     return trajectories;
 }
 
 function computeBlackKarasinski(meanReversionRate, longTermMean, volatility, eta, lambda, numSteps, timeDelta) {
     const trajectories = [];
-    let level = longTermMean; // Start at the long-term mean (you can customize this)
+    let level = longTermMean;
 
     for (let i = 0; i < numSteps; i++) {
-        // Generate random values based on normal distribution (standard normal)
         const randomValue1 = generateRandomNormal();
         const randomValue2 = generateRandomNormal();
 
-        // Update the level using the Black–Karasinski formula
         const meanDiff = meanReversionRate * (longTermMean - level) * timeDelta;
         const volatilityDiff = volatility * Math.sqrt(level) * randomValue1 * Math.sqrt(timeDelta);
         const meanVolatilityDiff = eta * (lambda - level) * timeDelta;
         const volatilityVolatilityDiff = volatility * Math.sqrt(level) * randomValue2 * Math.sqrt(timeDelta);
 
         level += meanDiff + volatilityDiff + meanVolatilityDiff + volatilityVolatilityDiff;
-
         trajectories.push(level);
     }
-
     return trajectories;
 }
 
 function computeHeston(initialValue, meanReversionRate, longTermVolatility, volatilityOfVolatility, correlation, numSteps, timeDelta) {
     const trajectories = [];
     let value = initialValue;
-    let volatility = longTermVolatility; // Start at the long-term volatility (you can customize this)
+    let volatility = longTermVolatility;
 
     for (let i = 0; i < numSteps; i++) {
-        // Generate random values based on normal distribution (standard normal)
         const randomValue1 = generateRandomNormal();
         const randomValue2 = generateRandomNormal();
 
-        // Update the price and volatility using the Heston model
         const priceDiff = meanReversionRate * (longTermVolatility - volatility) * timeDelta;
         const volatilityDiff = volatilityOfVolatility * Math.sqrt(volatility) * randomValue1 * Math.sqrt(timeDelta);
         const priceVolatilityCorrelation = correlation * volatility * randomValue2 * Math.sqrt(timeDelta);
 
         value *= Math.exp(priceDiff - 0.5 * volatility * timeDelta + priceVolatilityCorrelation);
         volatility += volatilityDiff;
-
         trajectories.push({ value, volatility });
     }
-
     return trajectories;
 }
 
 function computeChen(initialValue, meanReversionRate, longTermVolatility, volatilityOfVolatility, jumpIntensity, jumpVolatility, numSteps, timeDelta) {
     var trajectories = [];
     let value = initialValue;
-    let volatility = longTermVolatility; // Start at the long-term volatility (you can customize this)
+    let volatility = longTermVolatility;
 
     for (let i = 0; i < numSteps; i++) {
-        // Generate random values based on normal distribution (standard normal)
         const randomValue1 = generateRandomNormal();
         const randomValue2 = generateRandomNormal();
 
-        // Update the price and volatility using the Chen model
         const valueDiff = meanReversionRate * (longTermVolatility - volatility) * timeDelta;
         const volatilityDiff = volatilityOfVolatility * Math.sqrt(volatility) * randomValue1 * Math.sqrt(timeDelta);
-
         const jumpSize = jumpIntensity * (randomValue2 - 0.5 * jumpVolatility ** 2) * timeDelta + jumpVolatility * Math.sqrt(timeDelta) * randomValue2;
 
         value *= Math.exp(valueDiff + jumpSize);
         volatility += volatilityDiff;
-
         trajectories.push({ value, volatility });
     }
-
     return trajectories;
 }
 
@@ -343,17 +302,14 @@ function computePoisson(lambda, numIntervals) {
     let count = 0;
 
     for (let i = 0; i < numIntervals; i++) {
-        // Generate a random number from a uniform distribution
         const randomValue = Math.random();
 
-        // Determine if an event occurs in this interval
         if (randomValue < lambda / numIntervals) {
             count++;
         }
 
         trajectories.push(count);
     }
-
     return trajectories;
 }
 
@@ -362,18 +318,14 @@ function computeEulerMaruyama(initialValue, numSteps, timeDelta) {
     let value = initialValue;
 
     for (let i = 0; i < numSteps; i++) {
-        // Generate a random value based on normal distribution (standard normal)
         const randomValue = generateRandomNormal();
 
-        // Update the value using the Euler–Maruyama method
         const driftTerm = drift(value, i * timeDelta) * timeDelta;
         const diffusionTerm = diffusion(value, i * timeDelta) * randomValue * Math.sqrt(timeDelta);
 
         value += driftTerm + diffusionTerm;
-
         trajectories.push(value);
     }
-
     return trajectories;
 }
 
@@ -382,17 +334,13 @@ function computeMilstein(initialValue, numSteps, timeDelta) {
     let value = initialValue;
 
     for (let i = 0; i < numSteps; i++) {
-        // Generate random values based on normal distribution (standard normal)
         const randomValue = generateRandomNormal();
 
-        // Update the value using the Milstein method
         const driftTerm = drift(value, i * timeDelta) * timeDelta;
         const diffusionTerm = diffusion(value, i * timeDelta) * randomValue * Math.sqrt(timeDelta);
-        const correctionTerm = 0.5 * diffusion(value, i * timeDelta) * diffusion(value, i * timeDelta) *
-            ((randomValue * randomValue) - 1) * timeDelta;
+        const correctionTerm = 0.5 * diffusion(value, i * timeDelta) * diffusion(value, i * timeDelta) * ((randomValue * randomValue) - 1) * timeDelta;
 
         value += driftTerm + diffusionTerm + correctionTerm;
-
         trajectories.push(value);
     }
 
@@ -404,20 +352,14 @@ function computeRungeKutta(initialValue, numSteps, timeDelta) {
     let value = initialValue;
 
     for (let i = 0; i < numSteps; i++) {
-        // Generate random values based on normal distribution (standard normal)
         const randomValue = generateRandomNormal();
 
-        // Runge-Kutta method (second order)
-        const k1 = drift(value, i * timeDelta) * timeDelta +
-            diffusion(value, i * timeDelta) * randomValue * Math.sqrt(timeDelta);
-        const k2 = drift(value + 0.5 * k1, (i + 0.5) * timeDelta) * timeDelta +
-            diffusion(value + 0.5 * k1, (i + 0.5) * timeDelta) * randomValue * Math.sqrt(timeDelta);
+        const k1 = drift(value, i * timeDelta) * timeDelta + diffusion(value, i * timeDelta) * randomValue * Math.sqrt(timeDelta);
+        const k2 = drift(value + 0.5 * k1, (i + 0.5) * timeDelta) * timeDelta + diffusion(value + 0.5 * k1, (i + 0.5) * timeDelta) * randomValue * Math.sqrt(timeDelta);
 
         value += k2;
-
         trajectories.push(value);
     }
-
     return trajectories;
 }
 
@@ -426,10 +368,8 @@ function computeHeunsMethod(initialValue, numSteps, timeDelta) {
     let value = initialValue;
 
     for (let i = 0; i < numSteps; i++) {
-        // Generate random values based on normal distribution (standard normal)
         const randomValue = generateRandomNormal();
 
-        // Heun's method (second order)
         const drift1 = drift(value, i * timeDelta);
         const diffusion1 = diffusion(value, i * timeDelta);
         const k1 = drift1 * timeDelta + diffusion1 * randomValue * Math.sqrt(timeDelta);
@@ -439,30 +379,23 @@ function computeHeunsMethod(initialValue, numSteps, timeDelta) {
         const k2 = drift2 * timeDelta + diffusion2 * randomValue * Math.sqrt(timeDelta);
 
         value += 0.5 * (k1 + k2);
-
         trajectories.push(value);
     }
-
     return trajectories;
 }
 
 function generateRandomNormal() {
-    // Simple function to generate a random value from a standard normal distribution
     return Math.sqrt(-2 * Math.log(Math.random())) * Math.cos(2 * Math.PI * Math.random());
 }
 
 function drift(value, time) {
-    // You can customize this drift function based on your SDE
-    // For example, let's use a linear drift: b(X_t, t) = a * X_t + b * t
     const a = 0.1;
     const b = 0.2;
 
     return a * value + b * time;
 }
 
-// Example of a diffusion function (replace with your own function)
 function diffusion(value, time) {
-    // This is just an example, replace it with your own diffusion function
     return 0.2 * value * Math.cos(time);
 }
 
