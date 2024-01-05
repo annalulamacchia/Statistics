@@ -1,250 +1,325 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Grafico a Linee e a Barre</title>
-    <style>
-        .container{
-            display: flex;
-            flex-direction: row;
-            height:100vh;
-           max-width:100%;
-
-        }
-        .container1 {
-            width: 80%;
-            height: 95%; 
-            border: 1px solid #000;
-            overflow: hidden;
-            resize: both;
-        }
-        .container2 {
-            width: 80%; 
-            max-height: 95%; 
-            border: 1px solid #000;
-            overflow: hidden;
-            object-fit: cover;
-            resize: both;
-        }
-        canvas {
-            width: 80%;
-            height:90%;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-    <div class="container1" onmousedown="resizeContainerLineChart(event)">
-    <canvas id="lineChart" ></canvas>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <title>Simulation of Poisson Point Process</title>
+  <style>
+      body {
+          margin: 0;
+          padding: 0;
+           
+      }
+   
+      .section {
+          width: 33.33%;
+          height: 70vh;
+          position: relative;
+          float: left;
+          margin-bottom: 50px;
+      }
+   
+      .canvas {
+          position: absolute;
+          top: 20px;
+          left: 0;
+          width: 100%;
+          height: 100%;
+      }
+  </style></head>
+   
+  
+   
+  <body>
+    <h3>Simulation of Poisson Point Process</h3>
+    <div>
+      <label for="numSystemsInput">Number of Systems (M): </label>
+      <input type="number" id="numSystemsInput" min="1" value="10">
     </div>
-    <div class="container2"  onmousedown="resizeContainerBarChart(event)">
-    <canvas id="barChart"></canvas>
+    <div>
+      <label for="numAttacksInput">Number of SubIntervals (N): </label>
+      <input type="number" id="numAttacksInput" min="1" value="200">
     </div>
-</div>
+    <div>
+      <label for="successProbabilityInput">lambda : </label>
+      <input type="number" id="successProbabilityInput" value="70">
+    </div>
+      
+    <div>
+      <label for="Time">Time (T) : </label>
+      <input type="number" id="time" value="1">
+    </div>
+   
+    <div>
+      <label for="Day">Choose a day : </label>
+      <input type="number" id="day" value="20">
+    </div>
+   
+    <button id="startSimulationButton">Start Simulation</button>
 
-<script>
-    var M = Math.floor(Math.random() * 10) + 1;
-    var lambda = 100;
-    var t = 1;
-    var N = 400;
-    var p = lambda *(t / N);
-    var scoreTrajectories = [];
-    scoreTrajectories= AttackLanded();
-    const chart1 = document.getElementById("lineChart");
-    const chart2 = document.getElementById("barChart");
-    const container1 = document.querySelector(".container1");
-    const container2 = document.querySelector(".container2");
-
-    function resizeContainerLineChart(event) {
-        const initialX = event.clientX;
-        const initialWidth = parseFloat(getComputedStyle(container1).width);
-        const onMouseMove = (e) => {
-            const newWidth = initialWidth + (e.clientX - initialX);
-            container1.style.width = `${newWidth}px`;ds
-            const newWidth2 = initialWidth2 + (e.clientX - initialX);
-            container2.style.width = `${newWidth2}px`;
-            resizeCharts();
-        };
-    }
-
-    function resizeContainerBarChart(event) {
-        const initialX = event.clientX;
-        const initialWidth2 = parseFloat(getComputedStyle(container2).width);
-        const onMouseMove = (e) => {
-            const newWidth = initialWidth + (e.clientX - initialX);
-            container1.style.width = `${newWidth}px`;
-            const newWidth2 = initialWidth2 + (e.clientX - initialX);
-            container2.style.width = `${newWidth2}px`;
-            resizeCharts();
-        };
-
-        const onMouseUp = () => {
-            window.removeEventListener("mousemove", onMouseMove);
-            window.removeEventListener("mouseup", onMouseUp);
-        };
-
-        window.addEventListener("mousemove", onMouseMove);
-        window.addEventListener("mouseup", onMouseUp);
-    }
-
-    function resizeCharts() {
-        const containerWidth = parseFloat(getComputedStyle(container1).width);
-        const containerHeight = parseFloat(getComputedStyle(container1).height);
-        const containerWidth2 = parseFloat(getComputedStyle(container2).width);
-        const containerHeight2 = parseFloat(getComputedStyle(container2).height);
-        chart1.width = containerWidth;
-        chart1.height = containerHeight / 2;
-        chart2.width = containerWidth2;
-        chart2.height = (containerHeight2/2);
-        creaCharts();
-    }
-
-    function AttackLanded(){
-        var scoreTrajectories = [];
-        for (var i = 0; i < M; i++) {
-            var scores = [];
-            var cumulativeScore = 0;
-            for (var j = 0; j < N; j++) {
-                if (Math.random() < p) {
-                    cumulativeScore = -1; 
-                } else {
-                    cumulativeScore = 1;  
-                }
-                scores.push(cumulativeScore);
-            }
-            scoreTrajectories.push(scores);
-        }        
-        return scoreTrajectories;
-    }
-    creaCharts();
+    <hr>
+    <div>
+      <div class="section">
+          <label>Poisson Point Process Chart: </label>
+          <canvas class="canvas" id="myCanvas" height="400" style="margin-top: 25px;"></canvas>
+      </div>
+      <div class="section">
+          <label>Histogram referring last day : </label>
+          <canvas class="canvas" id="histogramCanvas" height="400" style="margin-top: 25px;"></canvas>
+      </div>
+      <div class="section">
+          <label>Histogram referring selected day : </label>
+          <canvas class="canvas" id="histogram1DaySpecified" height="400" style="margin-top: 25px;"></canvas>   
+      </div>        
+    <div>
     
-    function creaCharts(){
-        var canvasLine = document.getElementById('lineChart');
-        var ctxLine = canvasLine.getContext('2d');
-        var canvasBar = document.getElementById('barChart');
-        var ctxBar = canvasBar.getContext('2d');
-        var width = canvasLine.width;
-        var height = canvasLine.height;
-        var padding = 40;
-        var numDataPoints = N;
-        
-        ctxLine.beginPath();
-        ctxLine.moveTo(padding, height - padding);
-        ctxLine.lineTo(width - padding, height - padding);
-        ctxLine.stroke();
-
-        var successfulAttacks= [M];
-        var cumulative= [M];
-        for(let i = 0; i<M;i++){
-            successfulAttacks[i]=0;
-            cumulative[i]= 0;
+    <script>
+      const canvas = document.getElementById("myCanvas");
+      const ctx = canvas.getContext("2d");
+    
+      let numSystemsInput = document.getElementById("numSystemsInput");
+      let numAttacksInput = document.getElementById("numAttacksInput");
+      let T = parseInt(document.getElementById("time").value);
+      let lambda = parseFloat(document.getElementById("successProbabilityInput").value);
+   
+      let successProbabilityInput = lambda * T /(parseInt(numAttacksInput.value)) ; 
+      console.log(successProbabilityInput)
+       
+      const startSimulationButton = document.getElementById("startSimulationButton");
+      
+      let day = parseInt(document.getElementById("day").value);
+   
+      let scores = []; // Array to store security scores for each system
+      
+      function startSimulation() {
+        numSystems = parseInt(numSystemsInput.value);
+        numAttacks = parseInt(numAttacksInput.value);
+        T = parseInt(document.getElementById("time").value);
+        lambda = parseFloat(document.getElementById("successProbabilityInput").value);
+        successProbabilityInput = lambda * T /(parseInt(numAttacksInput.value)) ;
+  
+        scores = [];
+      
+        scores.length = 0;
+   
+        // Simulate security scores for all systems
+        for (let i = 0; i < numSystems; i++) {
+          const systemScores = simulateSecurityScores(numAttacks, successProbabilityInput)[0];
+          scores.push(systemScores);
         }
+   
+        drawSecurityScores(scores,canvas,ctx);
+      }
+   
+      startSimulationButton.addEventListener("click", startSimulation);
+    
+      // Function to simulate security scores for a single system
+      function simulateSecurityScores(numAttacks, p) {
+        const scores = [];
+          
+        let score = 0;
         
-        for(let i = 0; i<M; i++){
-            for(let j = 0; j<N; j++){            
-            if(scoreTrajectories[i][j] == -1){
-                    successfulAttacks[i]++;
-                }
+        for (let attack = 1; attack <= numAttacks; attack++) {
+          if (Math.random() < p) {
+            score += 1; // System is penetrated
+          } 
+          scores.push(score);
+          }
+   
+        return [scores];
+      }
+    
+      function drawSecurityScores(scores,canvas,ctx) {
+        const numTrajectories = scores.length;
+        const width = canvas.width;
+        const height = canvas.height;
+   
+        // Clear the canvas
+        ctx.clearRect(0, 0, width, height);
+   
+        // Find the maximum and minimum scores for scaling
+        let minScore = 0;
+        let maxScore = 0;
+   
+        scores.forEach((systemScores) => {
+          minScore = Math.min(minScore, ...systemScores);
+          maxScore = Math.max(maxScore, ...systemScores);
+        });
+   
+        // Scale the scores for drawing
+        const scoreRange = maxScore - minScore;
+        const scoreScale = height / scoreRange;
+   
+        // Draw the y-axis (ordinates)
+        ctx.beginPath();
+        ctx.moveTo(50, 0);
+        ctx.lineTo(50, height);
+        ctx.stroke();
+   
+        // Draw the x-axis (ascisses)
+        ctx.beginPath();
+        ctx.moveTo(50, height);
+        ctx.lineTo(width, height);
+        ctx.stroke();
+   
+        // Draw labels for the y-axis
+        for (let i = minScore; i <= maxScore; i++) {
+          const labelY = height - (i - minScore) * scoreScale;
+          ctx.fillText(i, 30, labelY);
+        }
+   
+        // Draw numbers for the x-axis (attacks)
+      for (let i = 0; i <= numAttacks; i += 10) {
+          const labelX = (i / numAttacks) * (width - 50) + 50;
+          ctx.fillText(i, labelX, height + 20);
+      }
+   
+   
+        // Draw score trajectories for all systems
+        scores.forEach((systemScores, index) => {
+          ctx.beginPath();
+          ctx.strokeStyle = getRandomColor();
+          for (let i = 0; i < numAttacks; i++) {
+            const x = (i / numAttacks) * (width - 50) + 50;
+            const y = height - (systemScores[i] - minScore) * scoreScale;
+            if (i === 0) {
+              ctx.moveTo(x, y);
+            } else {
+              ctx.lineTo(x, y);
             }
-        }
-        var maxDataValue = Math.max.apply(null, cumulative);
-        var minDataValue = Math.min.apply(null, cumulative);
-        var xScale = (width - 2 * padding) / numDataPoints;
-        var yScale = (height - 2 * padding) / (N - minDataValue);
+          }
+          ctx.stroke();
+        });
+      }
+        
+      // Generate a random color for each system trajectory
+      function getRandomColor() {
+        return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+      }
+        
+      // Definisci il numero di intervalli e la larghezza di ciascun intervallo
+      const numIntervals = 21; // Ad esempio, 21 intervalli da -N a N
+      const intervalWidth = (2 * numAttacksInput) / numIntervals; // Calcola la larghezza dell'intervallo
+    
+      // Crea un array per contare il numero di sistemi in ciascun intervallo
+      const intervalCounts = new Array(numIntervals).fill(0);
+    
+      // Assegna ciascun sistema a un intervallo in base al suo punteggio
+      scores.forEach((systemScores) => {
+      systemScores.forEach((score) => {
+          const intervalIndex = Math.floor((score + numAttacksInput) / intervalWidth);
+          // Assicurati che l'indice dell'intervallo sia all'interno dei limiti
+          if (intervalIndex >= 0 && intervalIndex < numIntervals) {
+          intervalCounts[intervalIndex]++;
+          }
+      });
+      });
+        
+      function drawHorizontalHistogram(data, canvasId,numAttacks) {
+           
+          numSystems = parseInt(numSystemsInput.value);
+          penetrationProbability = parseFloat(successProbabilityInput.value);
+                  // Crea un array per contare il numero di elementi in ciascun intervallo
+          const maxCount = Math.max(...data);
+          const minCount = Math.min(...data);
+          const numIntervals = maxCount - minCount;
+       
+          // Recupera il canvas HTML dall'ID fornito
+          const canvas = document.getElementById(canvasId);
+          const ctx = canvas.getContext("2d");
+       
+          // Imposta la larghezza e l'altezza del canvas
+          const canvasWidth = canvas.width;
+          const canvasHeight = canvas.height;
+       
+          // Calcola l'altezza di ciascuna barra dell'istogramma
+          const barHeight = canvasHeight / (numIntervals);
+       
+          // Pulisci il canvas
+          ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+       
+          var counter = countOccurrences(data)
+           
+              // Disegna l'istogramma
+          for(let i = minCount; i < minCount + numIntervals; i++){
+       
+              const barWidth = (counter[i] / numSystems) * canvasWidth;
+              const y = canvasHeight - (i - minCount + 1) * barHeight;
+       
+              // Colore delle barre dell'istogramma
+              ctx.fillStyle = "blue";
+              ctx.fillRect(0, y, barWidth, barHeight);
+       
+              // Testo per l'etichetta dell'intervallo sull'asse orizzontale
+              ctx.fillStyle = "black";
+              ctx.fillText(`[${i};${i + 1})`, barWidth + 5, y + barHeight / 2);
+              }
+      }
+    
+      function countOccurrences(arr) {
+          const occurrenceCount = {};
             
-        for (var i = 0; i < M; i++) {
-            ctxLine.beginPath();
-            ctxLine.strokeStyle = getRandomColor();
-            ctxLine.lineWidth = 2;
-            for (var j = 0; j < numDataPoints; j++) {
-                var x = padding + j * xScale;
-                cumulative[i]+= scoreTrajectories[i][j];
-                var y = height - padding - (cumulative[i] ) * yScale;
-                if (j === 0) {
-                    ctxLine.moveTo(x, y);
-                } else {
-                     ctxLine.lineTo(x, y);
-                }
-            }
-            ctxLine.stroke();
-        }
-
-        ctxLine.fillStyle = "black";
-        ctxLine.font = "bold 12px Arial";
-        ctxLine.fillText("Number of Attacks", width / 2, height - padding / 16);
-        ctxLine.fillText("Security Score", padding / 2, padding / 2);
-
-        for (var i = 0; i <= numDataPoints; i += 5) {
-            var x = padding + i * xScale;
-            ctxLine.beginPath();
-            ctxLine.moveTo(x, height - padding + 5);
-            ctxLine.lineTo(x, height - padding - 5);
-            ctxLine.stroke();
-            ctxLine.fillText(i, x - 10, height - padding + 20);
-        }
-
-        for (var i = minDataValue; i <= maxDataValue; i += 5) {
-            var y = height - padding - (i - minDataValue) * yScale;
-            ctxLine.beginPath();
-            ctxLine.moveTo(padding - 5, y);
-            ctxLine.lineTo(padding + 5, y);
-            ctxLine.stroke();
-            ctxLine.fillText(i, padding - 30, y + 5);
-        }
-        BarChart(numDataPoints,scoreTrajectories,successfulAttacks,M, N,padding,ctxBar);
-    }
-
-    function BarChart(numDataPoints, scoreTrajectories,successfulAttacks,M, N,padding,ctxBar){
-        width = numDataPoints * 20;
-        height =10 *15;
-        var maxSuccessfulAttacks = Math.max.apply(null, successfulAttacks);
-        var barHeight = 8;
-        var barSpacing = 5;
-
-        for (var i = 0; i < M; i++) {
-            var conta = 0;
-            for (var j = 0; j < N; j++) {
-                conta += scoreTrajectories[i][j];
-            }
-            var y =  height - (i+1) *(barHeight + barSpacing);
-            var RectWidth = (conta / maxSuccessfulAttacks) * (width - 2 * padding);
-            var barWidth =  (conta / maxSuccessfulAttacks) *20;
-
-            ctxBar.fillStyle = "black";
-            ctxBar.font = "bold 12px Arial";
-            ctxBar.fillText(conta, barWidth , y + barHeight / 2 + 5);
-            ctxBar.fillStyle = getRandomColor();
-            ctxBar.fillRect(padding, y, barWidth, barHeight);
-        }
-
-        ctxBar.beginPath();
-        ctxBar.moveTo(padding, height);
-        ctxBar.lineTo(width - padding,height);
-        ctxBar.moveTo(padding, height);
-        ctxBar.lineTo(padding, padding);
-        ctxBar.stroke();
-
-        for (var j = 0; j <= maxSuccessfulAttacks; j += 5) {
-            var xTacca = padding + j * (width - 2 * padding) / maxSuccessfulAttacks;
-            ctxBar.beginPath();
-            ctxBar.moveTo(xTacca, height - padding + 5);
-            ctxBar.lineTo(xTacca, height - padding - 5);
-            ctxBar.stroke();
-        }
-
-        ctxBar.fillStyle = "black";
-        ctxBar.font = "bold 12px Arial";
-        ctxBar.fillText("Number of Successful Attacks", width/ 2,height);
-        ctxBar.fillText("System", padding / 2, padding / 2);
-    }
-
-    function getRandomColor() {
-        var letters = '0123456789ABCDEF';
-        var color = '#';
-        for (var i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }
-</script>
-</body>
-</html>
+          for (const element of arr) {
+              if (occurrenceCount[element]) {
+              occurrenceCount[element]++;
+              } else {
+              occurrenceCount[element] = 1;
+              }
+          }
+    
+          return occurrenceCount;
+      }
+    
+       
+      function getMatrixLastColumn(matrix) {
+      if (matrix.length === 0) {
+          // La matrice è vuota, quindi non c'è alcuna colonna
+          return [];
+      }
+       
+    
+      const numRows = matrix.length;
+      const lastColumn = [];
+    
+      for (let i = 0; i < numRows; i++) {
+          const row = matrix[i];
+          const lastElement = row[row.length - 1]; // Prende l'ultimo elemento della riga
+          lastColumn.push(lastElement);
+      }
+    
+      return lastColumn;
+      }
+   
+      function getChooseColumn(matrix,column){
+          if (matrix.length === 0) {
+          // La matrice è vuota, quindi non c'è alcuna colonna
+          return [];
+          }
+            
+          console.log(column)
+          const numRows = matrix.length;
+          const ChooseColumn = [];
+       
+          for (let i = 0; i < numRows; i++) {
+              const row = matrix[i];
+              const element = row[column - 1]; // Prende l'ultimo elemento della riga
+               
+              ChooseColumn.push(element);
+          }
+       
+          return ChooseColumn;
+      }   
+        
+      startSimulationButton.addEventListener("click", function () {
+     
+          const data = getMatrixLastColumn(scores)
+          drawHorizontalHistogram(data, "histogramCanvas",parseInt(numAttacksInput.value));
+   
+          let day = parseInt(document.getElementById("day").value) 
+          const dataDay = getChooseColumn(scores,day)
+          drawHorizontalHistogram(dataDay, "histogram1DaySpecified",day);
+      });
+        
+    
+    </script>
+  
+  
+  </div></div></body></html>
