@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <title>Gambler's Ruin Problem</title>
+  <style>
+      body {
+          margin: 0;
+          padding: 0;
+      }
+   
+      .section {
+          width: 33.33%;
+          height: 70vh;
+          position: relative;
+          float: left;
+          margin-bottom: 50px;
+      }
+   
+      .canvas {
+          position: absolute;
+          top: 20px;
+          left: 0;
+          width: 100%;
+          height: 100%;
+      }
+  </style></head>
+   
+  
+   
+  <body>
+    <h3>Gambler's Ruin Problem</h3>
+    <div>
+      <label for="numSystemsInput">Number of Systems (M): </label>
+      <input type="number" id="numSystemsInput" min="1" value="100">
+    </div>
+    <div>
+      <label for="numAttacksInput">Number of attacks (N): </label>
+      <input type="number" id="numAttacksInput" min="1" value="100">
+    </div>
+    <div>
+      <label for="successProbabilityInput">Success Probability : </label>
+      <input type="number" id="successProbabilityInput" value="0.5" min="0" max="1" step="0.01">
+    </div>
+      
+    <div>
+      <label for="security_score">Security score (S) : </label>
+      <input type="number" id="security_score" value="20">
+    </div>
+   
+    <div>
+      <label for="penetration_score">Penetration score (P) : </label>
+      <input type="number" id="penetration_score" value="20" min="20" max="100">
+    </div>
+  
+    <div>
+      <label for="Day">Choose a day : </label>
+      <input type="number" id="day" value="70">
+    </div>
+   
+    <button id="startSimulationButton">Start Simulation</button>
+    <hr>
+    
+    <div>
+      <div class="section">
+          <label>Chart: </label>
+          <canvas class="canvas" id="myCanvas" height="400" style="margin-top: 25px;"></canvas>
+      </div>
+      <div class="section">
+          <label>Histogram referring last day : </label>
+          <canvas class="canvas" id="histogramCanvas" height="400" style="margin-top: 25px;"></canvas>
+      </div>
+      <div class="section">
+          <label>Histogram referring selected day : </label>
+          <canvas class="canvas" id="histogram1DaySpecified" height="400" style="margin-top: 25px;"></canvas>   
+      </div>        
+    </div>
+    
+    <script>
+      const canvas = document.getElementById("myCanvas");
+      const ctx = canvas.getContext("2d");
+    
+      let numSystemsInput = document.getElementById("numSystemsInput");
+      let numAttacksInput = document.getElementById("numAttacksInput");
+      let successProbabilityInput = parseFloat(document.getElementById("successProbabilityInput").value);
+      let securityScoreInput = parseFloat(document.getElementById("security_score").value);
+      let penetrationScoreInput = parseFloat(document.getElementById("penetration_score").value);
+   
+      const startSimulationButton = document.getElementById("startSimulationButton");
+      
+      let day = parseInt(document.getElementById("day").value);
+   
+      let scores = []; // Array to store security scores for each system
+      
+      // Function to simulate security scores for a single system
+      function simulateSecurityScores(numAttacks, p, S, P) {
+        const scores = [];
+        
+        let score_penetrated_attacks = 0;
+        let score_defended_attacks = 0
+        let complessive_score = 0;
+  
+        for (let attack = 1; attack <= numAttacks; attack++) {
+          if (Math.random() < p) {
+            score_penetrated_attacks += 1; // System is penetrated
+            complessive_score += 1;
+          }else{
+            score_defended_attacks +=1
+            complessive_score -= 1;
+          } 
+          scores.push(complessive_score);
+          
+          // Check if the system should be discarded if the system reach P before S 
+          if (score_penetrated_attacks >= P && score_defended_attacks < S) {
+            return ; // the system is discarded and will not be present in the chart
+          }
+  
+        }
+   
+        return scores;
+      }
+  
+      function startSimulation() {
+        numSystems = parseInt(numSystemsInput.value);
+        numAttacks = parseInt(numAttacksInput.value);
+        successProbabilityInput = parseFloat(document.getElementById("successProbabilityInput").value);
+        securityScoreInput = parseFloat(document.getElementById("security_score").value);
+        penetrationScoreInput = parseFloat(document.getElementById("penetration_score").value);
+  
+        scores = [];
+      
+        scores.length = 0;
+   
+        // Simulate security scores for all systems
+        for (let i = 0; i < numSystems; i++) {
+          let systemScores = simulateSecurityScores(numAttacks, successProbabilityInput, securityScoreInput, penetrationScoreInput);
+          if(systemScores == undefined)continue
+          scores.push(systemScores);
+        }
+   
+        drawSecurityScores(scores,canvas,ctx);
+      }
+   
+      startSimulationButton.addEventListener("click", startSimulation);
+    
+      function drawSecurityScores(scores,canvas,ctx) {
+        const numTrajectories = scores.length;
+        const width = canvas.width;
+        const height = canvas.height;
+   
+        // Clear the canvas
+        ctx.clearRect(0, 0, width, height);
+   
+        // Find the maximum and minimum scores for scaling
+        let minScore = 0;
+        let maxScore = 0;
+   
+        scores.forEach((systemScores) => {
+          minScore = Math.min(minScore, ...systemScores);
+          maxScore = Math.max(maxScore, ...systemScores);
+        });
+   
+        // Scale the scores for drawing
+        const scoreRange = maxScore - minScore;
+        const scoreScale = height / scoreRange;
+   
+        // Draw the y-axis (ordinates)
+        ctx.beginPath();
+        ctx.moveTo(50, 0);
+        ctx.lineTo(50, height);
+        ctx.stroke();
+   
+        // Draw the x-axis (ascisses)
+        ctx.beginPath();
+        ctx.moveTo(50, height);
+        ctx.lineTo(width, height);
+        ctx.stroke();
+   
+        // Draw labels for the y-axis
+        for (let i = minScore; i <= maxScore; i++) {
+          const labelY = height - (i - minScore) * scoreScale;
+          ctx.fillText(i, 30, labelY);
+        }
+   
+        // Draw numbers for the x-axis (attacks)
+        for (let i = 0; i <= numAttacks; i += 10) {
+          const labelX = (i / numAttacks) * (width - 50) + 50;
+          ctx.fillText(i, labelX, height + 20);
+        }
+   
+        // Draw score trajectories for all systems
+        scores.forEach((systemScores, index) => {
+          ctx.beginPath();
+          ctx.strokeStyle = getRandomColor();
+          for (let i = 0; i < numAttacks; i++) {
+            const x = (i / numAttacks) * (width - 50) + 50;
+            const y = height - (systemScores[i] - minScore) * scoreScale;
+            if (i === 0) {
+              ctx.moveTo(x, y);
+            } else {
+              ctx.lineTo(x, y);
+            }
+          }
+          ctx.stroke();
+        });
+      }
+        
+      // Generate a random color for each system trajectory
+      function getRandomColor() {
+        return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+      }
+        
+      // Definisci il numero di intervalli e la larghezza di ciascun intervallo
+      const numIntervals = 21; // Ad esempio, 21 intervalli da -N a N
+      const intervalWidth = (2 * numAttacksInput) / numIntervals; // Calcola la larghezza dell'intervallo
+    
+      // Crea un array per contare il numero di sistemi in ciascun intervallo
+      const intervalCounts = new Array(numIntervals).fill(0);
+    
+      // Assegna ciascun sistema a un intervallo in base al suo punteggio
+      scores.forEach((systemScores) => {
+      systemScores.forEach((score) => {
+          const intervalIndex = Math.floor((score + numAttacksInput) / intervalWidth);
+          // Assicurati che l'indice dell'intervallo sia all'interno dei limiti
+          if (intervalIndex >= 0 && intervalIndex < numIntervals) {
+          intervalCounts[intervalIndex]++;
+          }
+      });
+      });
+        
+      function drawHorizontalHistogram(data, canvasId, numAttacks) {
+           
+          numSystems = parseInt(numSystemsInput.value);
+          penetrationProbability = parseFloat(successProbabilityInput.value);
+          // Crea un array per contare il numero di elementi in ciascun intervallo
+          const maxCount = Math.max(...data);
+          const minCount = Math.min(...data);
+          const numIntervals = maxCount - minCount;
+       
+          // Recupera il canvas HTML dall'ID fornito
+          const canvas = document.getElementById(canvasId);
+          const ctx = canvas.getContext("2d");
+       
+          // Imposta la larghezza e l'altezza del canvas
+          const canvasWidth = canvas.width;
+          const canvasHeight = canvas.height;
+       
+          // Calcola l'altezza di ciascuna barra dell'istogramma
+          const barHeight = canvasHeight / (numIntervals);
+       
+          // Pulisci il canvas
+          ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+       
+          var counter = countOccurrences(data)
+           
+          // Disegna l'istogramma
+          for (let i = minCount ; i <= minCount + numIntervals; i++) {
+       
+              const barWidth = (counter[i] / numSystems) * canvasWidth;
+              const y = (i - minCount + 1) * barHeight;
+       
+              // Colore delle barre dell'istogramma
+              ctx.fillStyle = "blue";
+              ctx.fillRect(0, y, barWidth, barHeight);
+       
+              // Testo per l'etichetta dell'intervallo sull'asse orizzontale
+              ctx.fillStyle = "black";
+              ctx.fillText(`[${i};${i + 1})`, barWidth + 5, y + barHeight / 2);
+          }
+      }
+    
+      function countOccurrences(arr) {
+          const occurrenceCount = {};
+            
+          for (const element of arr) {
+              if (occurrenceCount[element]) {
+              occurrenceCount[element]++;
+              } else {
+              occurrenceCount[element] = 1;
+              }
+          }
+    
+          return occurrenceCount;
+      }
+    
+       
+      function getMatrixLastColumn(matrix) {
+      if (matrix.length === 0) {
+          // La matrice è vuota, quindi non c'è alcuna colonna
+          return [];
+      }
+       
+    
+      const numRows = matrix.length;
+      const lastColumn = [];
+    
+      for (let i = 0; i < numRows; i++) {
+          const row = matrix[i];
+          const lastElement = row[row.length - 1]; // Prende l'ultimo elemento della riga
+          lastColumn.push(lastElement);
+      }
+    
+      return lastColumn;
+      }
+   
+      function getChooseColumn(matrix,column){
+          if (matrix.length === 0) {
+          // La matrice è vuota, quindi non c'è alcuna colonna
+          return [];
+          }
+            
+          console.log(column)
+          const numRows = matrix.length;
+          const ChooseColumn = [];
+       
+          for (let i = 0; i < numRows; i++) {
+              const row = matrix[i];
+              const element = row[column - 1]; // Prende l'ultimo elemento della riga
+               
+              ChooseColumn.push(element);
+          }
+       
+          return ChooseColumn;
+      }   
+        
+      startSimulationButton.addEventListener("click", function () {
+     
+          const data = getMatrixLastColumn(scores)
+          drawHorizontalHistogram(data, "histogramCanvas", parseInt(numAttacksInput.value));
+   
+          let day = parseInt(document.getElementById("day").value) 
+          const dataDay = getChooseColumn(scores, day)
+          drawHorizontalHistogram(dataDay, "histogram1DaySpecified", day);
+      });
+        
+    
+    </script>
+  
+  
+  </body></html>
