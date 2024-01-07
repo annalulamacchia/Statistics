@@ -1,61 +1,99 @@
-// Include libraries or helper functions as needed
 function clearSimulation() {
-    // Svuota il canvas
     const canvas = document.getElementById('simulationChart');
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     document.getElementById('customSDE').value = '';
 }
-
 function runSimulation() {
     // Get user inputs
     const processType = document.getElementById('processType').value;
     const numSteps = parseInt(document.getElementById('numSteps').value);
-    const timeDelta = parseInt(document.getElementById('timeDelta').value);
+    const timeDelta = parseFloat(document.getElementById('timeDelta').value);
+    const systems = parseInt(document.getElementById('systems').value);
     const customSDE = document.getElementById('customSDE').value;
     var results = [];
 
     if (customSDE != '') {
         // If a custom SDE is provided, use it
-        results = simulateSDE(customSDE, numSteps, timeDelta);
+        for (i = 0; i < systems; i++) {
+            results[i] = [];
+            results[i] = simulateSDE(customSDE, numSteps, timeDelta);
+        }   
     }
     else {
         // Run simulations based on selected process
-        results = simulateProcess(processType, numSteps, timeDelta);
+        if(processType == "poisson") {
+            var systemsPoisson = document.getElementById('systemsPoisson').value;
+            for(i = 0; i < systemsPoisson; i++) {
+                results[i] = [];
+                results[i] = simulateProcess(processType, numSteps, timeDelta);
+            }
+        }
+        else {
+            
+            for(i = 0; i < systems; i++) {
+                results[i] = [];
+                results[i] = simulateProcess(processType, numSteps, 1);
+            }
+        }
     }
 
-    // Display results
-    if(processType == "heston" || processType == "chenModel") {
-        displayResults2(results);
+    if(processType == "poisson") {
+        var systemsPoisson = document.getElementById('systemsPoisson').value;
+        for(i = 0; i < systemsPoisson; i++) {
+            displayResults(results[i]);
+        }
     }
     else {
-        displayResults(results);
+        for(i = 0; i < systems; i++) {
+            displayResults(results[i]);
+        }
     }
 }
 
-function simulateSDE(sdeExpression, numSteps, timeDelta) {
+function simulateSDE(customSDE, numSteps, timeDelta) {
     const trajectories = [];
-    let x = 0; 
+
+    let score = 0;
 
     for (let i = 0; i < numSteps; i++) {
-        const dW = generateRandomNormal(); 
-        x = evaluateSDE(sdeExpression, x, i * timeDelta, timeDelta, dW);
-        trajectories.push(x);
+      const rand = generateRandomNormal();
+
+      // Definisci le variabili disponibili per l'utente nell'equazione
+      const t = i+1;
+      // Valuta l'equazione inserita dall'utente
+      const increment = evaluateUserEquation(customSDE, t, timeDelta);
+
+      score += increment * rand;
+
+      if (score < 0) {
+        // Assicura che il punteggio sia non negativo
+        score = 0;
+      }
+
+      trajectories.push(score);
     }
 
     return trajectories;
-}
+  }
 
-function evaluateSDE(sdeExpression, x, t, dt, dW) {
-    const customSDE = math.compile(sdeExpression);
-    const result = customSDE.evaluate({ x: x, t: t, dt: dt, dW: dW });
-    return result;
-}
+  function evaluateUserEquation(customSDE, t, timeDelta) {
+    try {
+      console.log(customSDE)
+      // Crea una funzione dalla stringa dell'equazione
+      const userFunction = new Function('t', 'dt', `return ${customSDE};`);
+      // Esegui la funzione con i parametri t e dt
+      return userFunction(t, timeDelta);
+    } catch (error) {
+      console.error("Error in the evaluation of the user's equation:", error);
+      return 0; // Ritorna 0 in caso di errore
+    }
+  }
 
 function simulateProcess(processType, numSteps, timeDelta) {
     var trajectories = [];
 
-    if(processType == "arithmeticBrownian") {
+   if(processType == "arithmeticBrownian") {
         const initialValue = parseFloat(document.getElementById('initialValueArit').value);
         const drift = parseFloat(document.getElementById('driftArit').value);
         const volatility = parseFloat(document.getElementById('volatilityArit').value);
@@ -272,7 +310,7 @@ function computeHeston(initialValue, meanReversionRate, longTermVolatility, vola
 
         value *= Math.exp(priceDiff - 0.5 * volatility * timeDelta + priceVolatilityCorrelation);
         volatility += volatilityDiff;
-        trajectories.push({ value, volatility });
+        trajectories.push(value);
     }
     return trajectories;
 }
@@ -292,7 +330,7 @@ function computeChen(initialValue, meanReversionRate, longTermVolatility, volati
 
         value *= Math.exp(valueDiff + jumpSize);
         volatility += volatilityDiff;
-        trajectories.push({ value, volatility });
+        trajectories.push(value);
     }
     return trajectories;
 }
@@ -320,8 +358,8 @@ function computeEulerMaruyama(initialValue, numSteps, timeDelta) {
     for (let i = 0; i < numSteps; i++) {
         const randomValue = generateRandomNormal();
 
-        const driftTerm = drift(value, i * timeDelta) * timeDelta;
-        const diffusionTerm = diffusion(value, i * timeDelta) * randomValue * Math.sqrt(timeDelta);
+        const driftTerm = 0.2 * timeDelta;
+        const diffusionTerm = 0.5 * randomValue * Math.sqrt(timeDelta);
 
         value += driftTerm + diffusionTerm;
         trajectories.push(value);
@@ -336,9 +374,9 @@ function computeMilstein(initialValue, numSteps, timeDelta) {
     for (let i = 0; i < numSteps; i++) {
         const randomValue = generateRandomNormal();
 
-        const driftTerm = drift(value, i * timeDelta) * timeDelta;
-        const diffusionTerm = diffusion(value, i * timeDelta) * randomValue * Math.sqrt(timeDelta);
-        const correctionTerm = 0.5 * diffusion(value, i * timeDelta) * diffusion(value, i * timeDelta) * ((randomValue * randomValue) - 1) * timeDelta;
+        const driftTerm = 0.2 * timeDelta;
+        const diffusionTerm = 0.1 * randomValue * Math.sqrt(timeDelta);
+        const correctionTerm = 0.5 * 0.2  * ((randomValue * randomValue) - 1) * timeDelta;
 
         value += driftTerm + diffusionTerm + correctionTerm;
         trajectories.push(value);
@@ -352,12 +390,15 @@ function computeRungeKutta(initialValue, numSteps, timeDelta) {
     let value = initialValue;
 
     for (let i = 0; i < numSteps; i++) {
-        const randomValue = generateRandomNormal();
+        const random1 = generateRandomNormal();
+        const random2 = generateRandomNormal();
+        const k1 = 0.1 + 0.2 * random1;  // Arithmetic Brownian Motion increment
+        const k2 = 0.1 + 0.2 * (random1 + random2) / 2;
+        const k3 = 0.1 + 0.2 * (random1 + random2) / 2;
+        const k4 = 0.1 + 0.2 * (random1 + random2);
 
-        const k1 = drift(value, i * timeDelta) * timeDelta + diffusion(value, i * timeDelta) * randomValue * Math.sqrt(timeDelta);
-        const k2 = drift(value + 0.5 * k1, (i + 0.5) * timeDelta) * timeDelta + diffusion(value + 0.5 * k1, (i + 0.5) * timeDelta) * randomValue * Math.sqrt(timeDelta);
-
-        value += k2;
+        const increment = (k1 + 2 * k2 + 2 * k3 + k4) * timeDelta / 6;
+        value += increment;
         trajectories.push(value);
     }
     return trajectories;
@@ -370,12 +411,12 @@ function computeHeunsMethod(initialValue, numSteps, timeDelta) {
     for (let i = 0; i < numSteps; i++) {
         const randomValue = generateRandomNormal();
 
-        const drift1 = drift(value, i * timeDelta);
-        const diffusion1 = diffusion(value, i * timeDelta);
+        const drift1 = 0.2;
+        const diffusion1 = 0.5;
         const k1 = drift1 * timeDelta + diffusion1 * randomValue * Math.sqrt(timeDelta);
 
-        const drift2 = drift(value + k1, (i + 1) * timeDelta);
-        const diffusion2 = diffusion(value + k1, (i + 1) * timeDelta);
+        const drift2 = 0.2 * k1;
+        const diffusion2 = 0.5 * k1;
         const k2 = drift2 * timeDelta + diffusion2 * randomValue * Math.sqrt(timeDelta);
 
         value += 0.5 * (k1 + k2);
@@ -430,55 +471,6 @@ function displayResults(trajectories) {
     // Disegna la linea
     ctx.stroke();
 }
-
-function displayResults2(trajectories) {
-    const canvas = document.getElementById('simulationChart');
-    const ctx = canvas.getContext('2d');
-    const numSteps = trajectories.length;
-
-    // Calcola la larghezza della linea nel grafico
-    const lineWidth = canvas.width / numSteps;
-
-    // Draw X and Y axes
-    drawAxes(ctx, canvas);
-
-    // Disegna la linea per i prezzi
-    ctx.beginPath();
-    ctx.strokeStyle = 'blue';
-    ctx.lineWidth = 2;
-
-    for (let i = 0; i < numSteps; i++) {
-        const x = i * lineWidth;
-        const y = canvas.height - (trajectories[i].value - Math.min(...trajectories.map(t => t.value))) * (canvas.height / (Math.max(...trajectories.map(t => t.value)) - Math.min(...trajectories.map(t => t.value))));
-
-        if (i === 0) {
-            ctx.moveTo(x, y);
-        } else {
-            ctx.lineTo(x, y);
-        }
-    }
-
-    ctx.stroke();
-
-    // Disegna la linea per la volatilità
-    ctx.beginPath();
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 2;
-
-    for (let i = 0; i < numSteps; i++) {
-        const x = i * lineWidth;
-        const y = canvas.height - (trajectories[i].volatility - Math.min(...trajectories.map(t => t.volatility))) * (canvas.height / (Math.max(...trajectories.map(t => t.volatility)) - Math.min(...trajectories.map(t => t.volatility))));
-
-        if (i === 0) {
-            ctx.moveTo(x, y);
-        } else {
-            ctx.lineTo(x, y);
-        }
-    }
-
-    ctx.stroke();
-}
-
 
 function getRandomColor() {
     // Helper function to generate a random HEX color
