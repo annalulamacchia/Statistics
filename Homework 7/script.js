@@ -30,7 +30,6 @@ function runSimulation() {
             }
         }
         else {
-            
             for(i = 0; i < systems; i++) {
                 results[i] = [];
                 results[i] = simulateProcess(processType, numSteps, 1);
@@ -59,15 +58,12 @@ function simulateSDE(customSDE, numSteps, timeDelta) {
     for (let i = 0; i < numSteps; i++) {
       const rand = generateRandomNormal();
 
-      // Definisci le variabili disponibili per l'utente nell'equazione
       const t = i+1;
-      // Valuta l'equazione inserita dall'utente
       const increment = evaluateUserEquation(customSDE, t, timeDelta);
 
       score += increment * rand;
 
       if (score < 0) {
-        // Assicura che il punteggio sia non negativo
         score = 0;
       }
 
@@ -77,16 +73,14 @@ function simulateSDE(customSDE, numSteps, timeDelta) {
     return trajectories;
   }
 
-  function evaluateUserEquation(customSDE, t, timeDelta) {
+  function evaluateSDE(customSDE, t, timeDelta) {
     try {
       console.log(customSDE)
-      // Crea una funzione dalla stringa dell'equazione
       const userFunction = new Function('t', 'dt', `return ${customSDE};`);
-      // Esegui la funzione con i parametri t e dt
       return userFunction(t, timeDelta);
     } catch (error) {
       console.error("Error in the evaluation of the user's equation:", error);
-      return 0; // Ritorna 0 in caso di errore
+      return 0;
     }
   }
 
